@@ -1,7 +1,7 @@
 const express = require('express');
 const knex = require('knex');
 const bodyParser = require('body-parser'); 
-const {checkUserName} = require("./helpers/endpointHelpers.js")
+const {checkUserName, checkUserEmail} = require("./helpers/endpointHelpers.js")
 
 const app = express();
 const port = 3000;
@@ -26,10 +26,17 @@ app.post('/users', async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
+    //check name
     if (!checkUserName(name)) {
       return res.status(400).json({ error: 'Invalid username' });
     }
 
+    //check email
+    if (!checkUserEmail(email)) {
+      return res.status(400).json({ error: 'Invalid email' });
+    }
+
+    //insert user in db
     const newUser = await db('usersApi').insert({ name, email, password });
 
     res.status(201).json({ id: newUser[0], name, email });
