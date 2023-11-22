@@ -14,13 +14,12 @@ function checkUserName(name){
 }
 
 function checkUserEmail(email) {
-    // Use a simple regex for email validation (this is a basic example)
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (
         email == null ||
         typeof email !== "string" ||
-        email.length > 255 || // Adjust the maximum length based on your requirements
+        email.length > 255 || 
         !emailRegex.test(email)
     ) {
         return false;
@@ -28,7 +27,20 @@ function checkUserEmail(email) {
     return true;
 }
 
+function checkUserPassword(password) {
+    if (
+        password == null ||
+        typeof password !== "string" ||
+        (password.length !== 0 && password.length < 6)
+    ) {
+        return false;
+    }
+    return true;
+}
+
+
 module.exports = {
     checkUserName,
-    checkUserEmail
+    checkUserEmail,
+    checkUserPassword
 };

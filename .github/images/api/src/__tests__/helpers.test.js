@@ -1,4 +1,4 @@
-const {checkUserName, checkUserEmail} = require("../helpers/endpointHelpers.js")
+const {checkUserName, checkUserEmail, checkUserPassword} = require("../helpers/endpointHelpers.js")
 
 test('checkname ', () => {
     //test name
@@ -17,6 +17,13 @@ test('checkname ', () => {
     expect(checkUserEmail("john.doe@example.com")).toBe(true);
     expect(checkUserEmail("invalid.email")).toBe(false);
     expect(checkUserEmail("john.doe@example")).toBe(false);
+
+    expect(checkUserPassword(null)).toBe(false);
+    expect(checkUserPassword(undefined)).toBe(false);
+    expect(checkUserPassword("12345")).toBe(false); 
+    expect(checkUserPassword("weak")).toBe(false); 
+    expect(checkUserPassword("strongPassword123")).toBe(true);
+
 
 })
 
