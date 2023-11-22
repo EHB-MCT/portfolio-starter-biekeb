@@ -1,7 +1,7 @@
 const express = require('express');
 const knex = require('knex');
 const bodyParser = require('body-parser'); 
-const bcrypt = require('bcrypt');
+// const bcrypt = require('bcrypt');
 
 const {checkUserName, checkUserEmail, checkUserPassword} = require("./helpers/endpointHelpers.js")
 
@@ -65,10 +65,10 @@ app.post('/users', async (req, res) => {
       return res.status(400).json({ error: 'Invalid password' });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // const hashedPassword = await bcrypt.hash(password, 10);
 
     //insert user in db
-    const newUser = await db('usersApi').insert({ name, email, password: hashedPassword });
+    const newUser = await db('usersApi').insert({ name, email, password });
 
     res.status(201).json({ id: newUser[0], name, email });
   } catch (error) {
@@ -108,7 +108,7 @@ app.put('/users/:id', async (req, res) => {
 
     res.json({ id, name, email });
   } catch (error) {
-    console.error(error); // Log the specific error message
+    console.error(error); 
 
     res.status(500).json({ error: `Error updating user in the database: ${error.message}` });
   }
@@ -128,7 +128,7 @@ app.delete('/users/:id', async (req, res) => {
 
     res.json({ id });
   } catch (error) {
-    console.error(error); // Log the specific error message
+    console.error(error); 
 
     res.status(500).json({ error: `Error deleting user from the database: ${error.message}` });
   }
