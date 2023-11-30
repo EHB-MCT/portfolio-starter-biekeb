@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "test-watch": "jest --watchAll --detectOpenHandles",
-    "test": "jest --detectOpenHandles",
+    "test": "jest --detectOpenHandles --forceExit",
+    "citest": "npx knex --cwd src/db/ migrate:latest && npm run test",
     "start": "npx knex --cwd src/db/ migrate:latest && nodemon src/index.js --legacy-watch",
     "dev": "npx knex migrate:latest --cwd src/db && npm run test-watch"
   },
