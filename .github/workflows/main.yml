@@ -1,31 +1,45 @@
-name: ci
+name: testflow
 
 on:
   push:
-    branches:
-      - "main"
+    branches: [ main ] 
 
+env: 
+  POSTGRES_USER: test
+  POSTGRES_PASSWORD: test
+  POSTGRES_DB: test
+  
 jobs:
-  build:
+
+  test:
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v4
-      -
-        name: Login to Docker Hub
-        uses: docker/login-action@v3
+      - uses: actions/checkout@v2
+
+      - name: build docker containers
+        run: docker-compose build 
+
+      - name: run docker containers
+        run: |
+          echo --- Running test cases ---
+          docker-compose up --exit-code-from api
+          echo --- Completed test cases ---
+  
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: build
+        run: docker-compose build
+      
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      -
-        name: Build and push
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/clockbox:latest
+      
+      - name: publish
+        run: docker-compose push
