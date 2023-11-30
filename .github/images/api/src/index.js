@@ -5,9 +5,7 @@ app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
 
-/*
 
-*/
 
 // const express = require('express');
 // const knex = require('knex');

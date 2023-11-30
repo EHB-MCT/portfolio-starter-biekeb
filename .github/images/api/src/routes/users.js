@@ -16,6 +16,7 @@ const initUserRoutes = (app, db) => {
     }
   });
 
+  //get user by id
 router.get('/users/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -52,7 +53,6 @@ router.post('/users', async (req, res) => {
   } catch (error) {
     console.error('Error adding user to the database:', error);
 
-    // Check if the error object has a 'message' property before using it
     const errorMessage = error.message ? `Error adding user to the database: ${error.message}` : 'Unknown error';
 
     res.status(500).json({ error: errorMessage });
