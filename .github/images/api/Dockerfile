@@ -7,6 +7,6 @@ COPY ./package*.json ./
 RUN npm install --quiet
 
 COPY ./src ./src
-COPY ./db ./db
 
-CMD ["npm","start"]
+#CMD ["npm","start"]
+CMD ["npm","run", "dev"]
