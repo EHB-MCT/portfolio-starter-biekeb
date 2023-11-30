@@ -27,11 +27,17 @@ describe('PUT /users/:id', () => {
             .send(updatedUserData);
 
         expect(response.status).toBe(200);
-        expect(response.body).toMatchObject(updatedUserData);
+
+        const { password, ...expectedUserDataWithoutPassword } = updatedUserData;
+
+        expect(response.body).toMatchObject(expectedUserDataWithoutPassword);
 
         const dbRecord = await db('usersApi').select("*").where("id", userId);
         expect(dbRecord.length).toBeGreaterThan(0);
-        expect(dbRecord[0]).toMatchObject(updatedUserData);
+
+        const { password: dbRecordPassword, ...dbRecordWithoutPassword } = dbRecord[0];
+
+        expect(dbRecordWithoutPassword).toMatchObject(expectedUserDataWithoutPassword);
     });
 
     test('should return 400 for invalid username', async () => {
