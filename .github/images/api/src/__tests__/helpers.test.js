@@ -18,6 +18,7 @@ test('checkname ', () => {
     expect(checkUserEmail("invalid.email")).toBe(false);
     expect(checkUserEmail("john.doe@example")).toBe(false);
 
+    // Test Password
     expect(checkUserPassword(null)).toBe(false);
     expect(checkUserPassword(undefined)).toBe(false);
     expect(checkUserPassword("12345")).toBe(false); 
