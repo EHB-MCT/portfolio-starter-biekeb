@@ -25,7 +25,9 @@
   },
   "devDependencies": {
     "assert": "^2.1.0",
+    "chai": "^4.3.10",
     "jest": "^29.7.0",
+    "mocha": "^10.2.0",
     "supertest": "^6.3.3"
   }
 }
