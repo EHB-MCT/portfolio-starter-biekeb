@@ -1,7 +1,6 @@
 const express = require("express");
 const uuid = require("uuid");
 const bcrypt = require("bcrypt");
-
 const {
   checkUserName,
   checkUserEmail,
@@ -11,6 +10,12 @@ const {
 
 const initUserRoutes = (app, db) => {
   const router = express.Router();
+
+  // Middleware for common checks or transformations
+  router.use((req, res, next) => {
+    // Add any middleware checks here
+    next();
+  });
 
   // Get all users
   router.get("/users", async (req, res) => {
