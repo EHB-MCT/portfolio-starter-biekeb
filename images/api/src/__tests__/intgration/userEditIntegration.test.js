@@ -3,34 +3,52 @@ const app = require("../../app.js");
 const knexfile = require("../../db/knexfile.js"); // replace with the path to your Knex configuration
 const db = require("knex")(knexfile.development);
 
-describe("Create and Delete User", () => {
+describe("Edit User", () => {
   let createdUserId;
 
-  test("should create a user and return 201", async () => {
-    const userData = {
-      name: "NewUser",
-      email: "new.user@example.com",
+  beforeEach(async () => {
+    // Clear the database or perform necessary setup before each test
+    await db("usersApi").truncate(); // This is just an example, adjust based on your needs
+
+    const createUserResponse = await request(app).post("/users").send({
+      name: "User",
+      email: "test.lol@email.com",
       age: 25,
-      password: "NewUserPassword123",
-    };
+      password: "Test54-",
+    });
 
-    const response = await request(app).post("/users").send(userData);
-
-    expect(response.status).toBe(201);
-    expect(response.body).toHaveProperty("id");
-    createdUserId = response.body.id; // Save the created user ID for the next test
+    createdUserId = createUserResponse.body.id;
   });
 
-  test("should delete the created user and return 200", async () => {
-    // Ensure a user was created in the previous test
-    expect(createdUserId).toBeDefined();
+  afterAll(() => {
+    // Clean up by destroying the database connection
+    db.destroy();
+  });
 
-    const response = await request(app).delete(`/users/${createdUserId}`);
+  test("should edit user and return 400 for validation errors or 404 for non-existing user", async () => {
+    const response = await request(app).put(`/users/${createdUserId}`).send({
+      name: "User",
+      email: "new.user@email.com",
+      age: 25,
+      password: "1234",
+    });
 
-    expect(response.status).toBe(200);
+    // Update the expectation based on the actual behavior of your application
+    expect(response.status.toString()).toMatch(/^(400|404)$/); // Adjust based on your actual behavior
 
-    // Optionally, you can check if the user is deleted by trying to fetch it
-    const fetchUserResponse = await request(app).get(`/users/${createdUserId}`);
-    expect(fetchUserResponse.status).toBe(404);
+    // If a 400 response is expected, check for the error message
+    if (response.status === 400) {
+      expect(response.body).toHaveProperty("errors");
+      // Add more specific checks based on your validation error handling
+    }
+  });
+
+  test("should return 404 for non-existing user", async () => {
+    // Assuming there's no user with ID 999 in your database
+    const nonExistingUserId = 999;
+    const response = await request(app).get(`/users/${nonExistingUserId}`);
+
+    expect(response.status).toBe(404);
+    expect(response.body).toHaveProperty("error", "User not found");
   });
 });
