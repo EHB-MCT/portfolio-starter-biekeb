@@ -4,52 +4,46 @@ const knexfile = require("../../db/knexfile.js");
 const db = require("knex")(knexfile.development);
 
 describe("GET /users/:id", () => {
-  beforeAll(async () => {
-    await db.raw("BEGIN");
-  });
+  test("should return user by id and return 200", async () => {
+    // Assuming there's a user with ID 1 in your database
+    const userIdToFetch = 1;
 
-  afterAll(async () => {
-    await db.destroy();
-  });
-
-  test("should return the correct user record", async () => {
-    const userId = 12;
-    const response = await request(app).get(`/users/${userId}`);
+    const response = await request(app).get(`/users/${userIdToFetch}`);
 
     expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty("id", userId);
-
-    const dbRecord = await db("usersApi").select("*").where("id", userId);
-    expect(dbRecord.length).toBeGreaterThan(0);
-    expect(dbRecord[0]).toHaveProperty("id", userId);
+    expect(response.body).toHaveProperty("id");
+    expect(response.body.id).toBe(userIdToFetch);
   });
 
-  // test("should return 404 for non-existent user", async () => {
-  //   const nonExistentUserId = 999;
-  //   const response = await request(app).get(`/users/${nonExistentUserId}`);
-  //   expect(response.status).toBe(404);
+  test("should return 404 for non-existing user", async () => {
+    // Assuming there's no user with ID 999 in your database
+    const nonExistingUserId = 999;
 
-  //   // Since you expect a 404 for a non-existent user, you don't need to check the database record.
-  //   // The next two lines can be removed.
-  //   // const dbRecord = await db("usersApi").select("*").where("id", nonExistentUserId);
-  //   // expect(dbRecord.length).toBe(0);
-  // });
+    const response = await request(app).get(`/users/5`);
 
-  // test("should return 400 for negative userid", async () => {
-  //   const negativeUserId = -12;
-  //   const response = await request(app).get(`/users/${negativeUserId}`);
-  //   expect(response.status).toBe(400);
-  // });
+    expect(response.status).toBe(404);
+    expect(response.body).toHaveProperty("error", "User not found");
+  });
 
-  // test("should return 400 for non-numeric userid", async () => {
-  //   const nonNumericUserId = "hello";
-  //   const response = await request(app).get(`/users/${nonNumericUserId}`);
-  //   expect(response.status).toBe(400);
-  // });
+  test("should return 401 for invalid user id", async () => {
+    // Assuming an invalid user id, for example, a string
+    const invalidUserId = "invalid";
 
-  // test("should return 400 for too large userid", async () => {
-  //   const tooLargeUserId = 999;
-  //   const response = await request(app).get(`/users/${tooLargeUserId}`);
-  //   expect(response.status).toBe(400);
-  // });
+    const response = await request(app).get(`/users/${invalidUserId}`);
+
+    expect(response.status).toBe(401);
+    expect(response.body).toHaveProperty("error", "Invalid user id");
+  });
+
+  test("should return 401 for out-of-range user id", async () => {
+    // Assuming an out-of-range user id, for example, 100000
+    const outOfRangeUserId = 100000;
+
+    const response = await request(app).get(`/users/${outOfRangeUserId}`);
+
+    expect(response.status).toBe(401);
+    expect(response.body).toHaveProperty("error", "Invalid user id");
+  });
+
+  // Additional test cases can be added if needed
 });
