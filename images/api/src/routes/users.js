@@ -1,6 +1,8 @@
 const express = require("express");
 const uuid = require("uuid");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken"); // You may need to install this package
+
 const {
   checkUserName,
   checkUserEmail,
@@ -68,14 +70,18 @@ const initUserRoutes = (app, db) => {
         return res.status(400).json({ error: "Invalid input data" });
       }
 
+      // Hash the password before storing it in the database
+      const hashedPassword = await bcrypt.hash(password, 10); // 10 is the number of salt rounds
+
       const newUser = await db("usersApi").insert({
         name,
         email,
         age,
-        password,
+        password: hashedPassword,
+        role: "user",
       });
 
-      res.status(201).json({ id: newUser[0], name, email, age });
+      res.status(201).json({ id: newUser[0], name, email, age, role: "user" });
     } catch (error) {
       console.error("Error adding user to the database:", error);
 
@@ -153,6 +159,51 @@ const initUserRoutes = (app, db) => {
 
       res.status(500).json({
         error: `Error deleting user from the database: ${error.message}`,
+      });
+    }
+  });
+
+  // Login user
+  router.post("/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+
+      // Validate email and password
+      if (!checkUserEmail(email) || !checkUserPassword(password)) {
+        return res.status(400).json({ error: "Invalid email or password" });
+      }
+
+      // Check if the user with the provided email exists
+      const user = await db("usersApi")
+        .whereRaw('LOWER("email") = LOWER(?)', [email])
+        .first();
+
+      if (!user) {
+        return res.status(401).json({ error: "Invalid email or password" });
+      }
+
+      // Check if the provided password matches the stored hashed password
+      const passwordMatch = await bcrypt.compare(password, user.password);
+
+      if (!passwordMatch) {
+        return res.status(401).json({ error: "Invalid email or password" });
+      }
+
+      // Generate a JWT token for authentication
+      const token = jwt.sign(
+        { userId: user.id, email: user.email },
+        "your-secret-key",
+        {
+          expiresIn: "1h", // You can adjust the expiration time as needed
+        }
+      );
+
+      res.json({ token });
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        error: `Error during login: ${error.message}`,
       });
     }
   });
