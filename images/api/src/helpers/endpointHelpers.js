@@ -48,9 +48,15 @@ function checkUserAge(age) {
   return true;
 }
 
+function checkUserRole(role) {
+  const validRoles = ["user", "admin"];
+  return typeof role === "string" && validRoles.includes(role.toLowerCase());
+}
+
 module.exports = {
   checkUserName,
   checkUserEmail,
   checkUserPassword,
   checkUserAge,
+  checkUserRole,
 };

@@ -25,9 +25,9 @@ const initUserRoutes = (app, db) => {
       const users = await db("usersApi").select("*");
       res.json(users);
     } catch (error) {
-      console.error(error);
+      console.error("Error in /users route:", error);
       res.status(500).json({
-        error: `Error retrieving users from the database: ${error.message}`,
+        error: "Error retrieving users from the database",
       });
     }
   });
@@ -145,15 +145,39 @@ const initUserRoutes = (app, db) => {
   router.delete("/users/:id", async (req, res) => {
     try {
       const { id } = req.params;
+      const { authorization } = req.headers;
 
-      //delete user in db
-      const deletedUser = await db("usersApi").where({ id }).del();
-
-      if (!deletedUser) {
-        return res.status(404).json({ error: "User not found" });
+      // Check if the Authorization header is provided
+      if (!authorization || !authorization.startsWith("Bearer ")) {
+        return res.status(401).json({ error: "Unauthorized" });
       }
 
-      res.json({ id });
+      const token = authorization.split(" ")[1];
+
+      try {
+        // Verify the JWT token
+        const decodedToken = jwt.verify(token, "your-secret-key");
+
+        // Check if the user making the request is the account owner or an admin
+        if (
+          !decodedToken ||
+          (decodedToken.userId !== id && decodedToken.role !== "admin")
+        ) {
+          return res.status(403).json({ error: "Permission denied" });
+        }
+
+        // Delete user in db
+        const deletedUser = await db("usersApi").where({ id }).del();
+
+        if (!deletedUser) {
+          return res.status(404).json({ error: "User not found" });
+        }
+
+        res.json({ id });
+      } catch (error) {
+        console.error(error);
+        res.status(401).json({ error: "Invalid token" });
+      }
     } catch (error) {
       console.error(error);
 
@@ -191,14 +215,14 @@ const initUserRoutes = (app, db) => {
 
       // Generate a JWT token for authentication
       const token = jwt.sign(
-        { userId: user.id, email: user.email },
+        { userId: user.id, email: user.email, role: user.role }, // Include the user's role
         "your-secret-key",
         {
           expiresIn: "1h", // You can adjust the expiration time as needed
         }
       );
 
-      res.json({ token });
+      res.json({ token, role: user.role }); // Send the user's role in the response
     } catch (error) {
       console.error(error);
 

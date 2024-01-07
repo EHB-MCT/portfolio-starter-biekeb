@@ -2,8 +2,30 @@ const request = require("supertest");
 const app = require("../../app.js");
 const knexfile = require("../../db/knexfile.js");
 const db = require("knex")(knexfile.development);
+const jwt = require("jsonwebtoken");
 
 describe("GET /users/:id", () => {
+  beforeAll(async () => {
+    // Create a user for testing
+    const createUserResponse = await request(app).post("/users").send({
+      name: "User",
+      email: "test.user345hdqq555j55@example.com",
+      age: 25,
+      password: "Test54-",
+      role: "admin", // Set to admin
+    });
+
+    userId = createUserResponse.body.id; // Ensure this is assigned correctly
+
+    // Mock token generation for the admin
+    authToken = jwt.sign({ role: "admin" }, "your-secret-key");
+  });
+
+  afterAll(async () => {
+    // Close the database connection after all tests
+    await db.destroy();
+  });
+
   test("should return user by id and return 200", async () => {
     // Assuming there's a user with ID 1 in your database
     const userIdToFetch = 1;
@@ -19,7 +41,7 @@ describe("GET /users/:id", () => {
     // Assuming there's no user with ID 999 in your database
     const nonExistingUserId = 999;
 
-    const response = await request(app).get(`/users/5`);
+    const response = await request(app).get(`/users/${nonExistingUserId}`);
 
     expect(response.status).toBe(404);
     expect(response.body).toHaveProperty("error", "User not found");
@@ -44,6 +66,4 @@ describe("GET /users/:id", () => {
     expect(response.status).toBe(401);
     expect(response.body).toHaveProperty("error", "Invalid user id");
   });
-
-  // Additional test cases can be added if needed
 });

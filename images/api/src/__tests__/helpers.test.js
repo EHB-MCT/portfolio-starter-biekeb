@@ -3,6 +3,7 @@ const {
   checkUserEmail,
   checkUserPassword,
   checkUserAge,
+  checkUserRole,
 } = require("../helpers/endpointHelpers.js");
 
 test("checkname ", () => {
@@ -38,4 +39,17 @@ test("checkage", () => {
   expect(checkUserAge("25")).toBe(false);
   expect(checkUserAge(-5)).toBe(false);
   expect(checkUserAge(25)).toBe(true);
+});
+
+test("check role", () => {
+  // Test valid roles
+  expect(checkUserRole("user")).toBe(true);
+  expect(checkUserRole("admin")).toBe(true);
+
+  // Test invalid roles
+  expect(checkUserRole("")).toBe(false);
+  expect(checkUserRole(null)).toBe(false);
+  expect(checkUserRole(undefined)).toBe(false);
+  expect(checkUserRole("moderator")).toBe(false);
+  expect(checkUserRole(123)).toBe(false);
 });

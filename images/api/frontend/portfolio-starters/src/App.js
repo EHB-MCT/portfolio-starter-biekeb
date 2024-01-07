@@ -1,7 +1,10 @@
+import Signup from "./components/Signup.jsx";
+import "./styles/index.css";
+
 function App() {
   return (
     <div className="App">
-      <h1>hello world</h1>
+      <Signup />
     </div>
   );
 }
