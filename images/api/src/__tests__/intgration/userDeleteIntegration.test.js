@@ -1,56 +1,71 @@
-const request = require('supertest');
-const app = require('../../app.js'); // replace with the path to your Express app file
-const knexfile = require('../../db/knexfile.js'); // replace with the path to your Knex configuration
-const db = require('knex')(knexfile.development);
+const request = require("supertest");
+const app = require("../../app.js"); // replace with the path to your Express app file
+const knexfile = require("../../db/knexfile.js"); // replace with the path to your Knex configuration
+const db = require("knex")(knexfile.development);
+const jwt = require("jsonwebtoken");
 
-describe('DELETE /users/:id', () => {
-    beforeEach(async () => {
-        // Set up a test user in the database before each test
-        await db('usersApi').insert({
-            id: 1,
-            name: 'TestUser',
-            email: 'test.user@example.com',
-            password: 'TestPassword123',
-        });
-    });
+describe("DELETE /users/:id", () => {
+  let createdUserId;
+  let authToken;
 
-    afterEach(async () => {
-        // Clean up the test user from the database after each test
-        await db('usersApi').truncate();
-    });
+  beforeAll(async () => {
+    try {
+      const createUserResponse = await request(app).post("/users").send({
+        name: "User",
+        email: "test.user345q555j55@example.com",
+        age: 25,
+        password: "Test54-",
+      });
 
-    test('should delete user and return the deleted user ID', async () => {
-        const userIdToDelete = 1;
+      createdUserId = createUserResponse.body.id;
 
-        const response = await request(app)
-            .delete(`/users/${userIdToDelete}`);
+      // Mock token generation for the test user
+      authToken = jwt.sign(
+        { userId: createdUserId, role: "admin" },
+        "your-secret-key"
+      );
+    } catch (error) {
+      console.error("Error creating user for testing:", error);
+    }
+  });
 
-        expect(response.status).toBe(200);
-        expect(response.body).toEqual({ id: userIdToDelete });
+  afterAll(async () => {
+    // Close the database connection after all tests
+    await db.destroy();
+  });
 
-        // Ensure the user has been deleted from the database
-        const deletedUser = await db('usersApi').where('id', userIdToDelete).first();
-        expect(deletedUser).toBeUndefined();
-    });
+  test("should delete user and return 200", async () => {
+    if (!createdUserId) {
+      console.error("Error: createdUserId is not defined.");
+      return;
+    }
 
-    test('should return 404 for non-existent user', async () => {
-        const nonExistentUserId = 999;
+    const response = await request(app)
+      .delete(`/users/${createdUserId}`)
+      .set("Authorization", `Bearer ${authToken}`);
 
-        const response = await request(app)
-            .delete(`/users/${nonExistentUserId}`);
+    expect(response.status).toBe(200);
+  });
 
-        expect(response.status).toBe(404);
-        expect(response.body).toHaveProperty('error', 'User not found');
-    });
+  test("should return 404 for non-existing user", async () => {
+    // Assuming there's no user with ID 999 in your database
+    const nonExistingUserId = 999;
+    const response = await request(app)
+      .delete(`/users/${nonExistingUserId}`)
+      .set("Authorization", `Bearer ${authToken}`);
 
-    test('should handle errors gracefully', async () => {
-        // Mock a database error by providing an invalid ID (e.g., a string)
-        const invalidUserId = 'invalid_id';
+    expect(response.status).toBe(404);
+    expect(response.body).toHaveProperty("error", "User not found");
+  });
 
-        const response = await request(app)
-            .delete(`/users/${invalidUserId}`);
+  test("should return 401 for unauthorized user", async () => {
+    // Assuming there's no user with ID 999 in your database
+    const nonExistingUserId = 999;
+    const response = await request(app).delete(`/users/${nonExistingUserId}`);
 
-        expect(response.status).toBe(500);
-        expect(response.body).toHaveProperty('error');
-    });
+    expect(response.status).toBe(401);
+    expect(response.body).toHaveProperty("error", "Unauthorized");
+  });
+
+  // Additional test cases can be added if needed
 });

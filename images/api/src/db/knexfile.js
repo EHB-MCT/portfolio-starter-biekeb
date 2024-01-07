@@ -1,19 +1,19 @@
 module.exports = {
   development: {
-    client: 'pg',
-    connection: process.env.PG_CONNECTION_STRING,
+    client: "pg",
+    connection:
+      process.env.PG_CONNECTION_STRING ||
+      "postgres://test:test@127.0.0.1:5432/test",
     migrations: {
-      directory: './migrations', 
+      directory: "./migrations",
     },
   },
 
-    test: {
-    client: 'pg',
-    connection: process.env.PG_TEST_CONNECTION_STRING || 'your_test_database_connection_string',
+  test: {
+    client: "pg",
+    connection: "postgres://test:test@127.0.0.1:5432/test",
     migrations: {
-      directory: './migrations',
+      directory: "./migrations",
     },
   },
-
-  
 };
