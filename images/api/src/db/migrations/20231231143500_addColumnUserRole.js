@@ -4,7 +4,6 @@
  */
 exports.up = function (knex) {
   return knex.schema.alterTable("usersApi", (table) => {
-    table.string("role");
   });
 };
 
@@ -14,6 +13,5 @@ exports.up = function (knex) {
  */
 exports.down = function (knex) {
   return knex.schema.alterTable("usersApi", (table) => {
-    table.string("role");
   });
 };
