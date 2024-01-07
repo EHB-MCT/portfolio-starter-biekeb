@@ -1,0 +1,155 @@
+body {
+  margin: 0%;
+  color: black;
+  font-family: sans-serif;
+  font-weight: 700;
+}
+
+.App {
+  background-image: url(../images/homepage.jpg);
+  background-repeat: no-repeat;
+  background-position: center center; /* Center the background image */
+  background-size: cover; /* Ensure the background image covers the entire element */
+
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+/* signup */
+
+.user-form {
+  text-align: center;
+  backdrop-filter: blur(5px); /* Add a blur effect to the background */
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.377
+  ); /* Adjust the background color and opacity */
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.form {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
+
+.submit-button {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.existing-account {
+  margin-top: 20px;
+}
+
+.login-link {
+  text-decoration: none;
+}
+
+.login-button {
+  background-color: #008cba;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.user-app {
+  background-image: url(../images/homepage.jpg);
+  background-repeat: no-repeat;
+  background-position: center center; /* Center the background image */
+  background-size: cover; /* Ensure the background image covers the entire element */
+
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+/* AdminDashboard.css */
+
+/* Add your styles here */
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.heading-primary {
+  color: #333;
+}
+
+.heading-secondary {
+  color: #555;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+}
+
+.list-item {
+  cursor: pointer;
+  margin-bottom: 8px;
+  padding: 8px;
+  background-color: #eee;
+  border-radius: 4px;
+}
+
+.list-item:hover {
+  background-color: #ddd;
+}
+
+.update-user-form {
+  margin-top: 20px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+.form-input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 12px;
+  box-sizing: border-box;
+}
+
+.form-button {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.form-button:hover {
+  background-color: #45a049;
+}

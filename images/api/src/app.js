@@ -1,18 +1,22 @@
-const express = require('express');
-const knex = require('knex');
-const bodyParser = require('body-parser'); 
+const express = require("express");
+const knex = require("knex");
+const bodyParser = require("body-parser");
+const cors = require("cors");
 
-const initEndpoints = require("./routes/users")
-const db = knex(require('./db/knexfile').development);
+const initUserRoutes = require("./routes/users");
+const initAdminRoutes = require("./routes/admin");
+const db = knex(require("./db/knexfile").development);
 
 const app = express();
+
 app.use(bodyParser.json());
+app.use(cors());
 
-initEndpoints(app, db)
+initUserRoutes(app, db);
+initAdminRoutes(app, db);
 
-app.get('/', (req, res) => {
-        res.send(200);
-    }
-);
+app.get("/", (req, res) => {
+  res.send(200);
+});
 
 module.exports = app;
